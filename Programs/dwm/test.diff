@@ -1,0 +1,210 @@
+--- config.def.h	2021-05-03 04:35:36.646654710 -0500
++++ config.h	2021-05-03 01:34:00.978809954 -0500
+@@ -1,3 +1,5 @@
++#include <X11/XF86keysym.h>
++
+ /* See LICENSE file for copyright and license details. */
+ 
+ /* appearance */
+@@ -5,9 +7,8 @@
+ static const unsigned int snap      = 32;       /* snap pixel */
+ static const int showbar            = 1;        /* 0 means no bar */
+ static const int topbar             = 1;        /* 0 means bottom bar */
+-static const double defaultopacity  = 0.75;
+-static const char *fonts[]          = { "monospace:size=10" };
+-static const char dmenufont[]       = "monospace:size=10";
++static const char *fonts[]          = { "source code pro:size=8" };
++static const char dmenufont[]       = "source code pro:size=8";
+ static const char col_gray1[]       = "#222222";
+ static const char col_gray2[]       = "#444444";
+ static const char col_gray3[]       = "#bbbbbb";
+@@ -27,10 +28,9 @@
+ 	 *	WM_CLASS(STRING) = instance, class
+ 	 *	WM_NAME(STRING) = title
+ 	 */
+-	/* class      instance    title       tags mask     isfloating	 opacity	monitor */
+-	{ "Gimp",     NULL,       NULL,       0,            1,           1.0,		-1 },
+-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           1.0,		-1 },
+-	{ "St",	      NULL,       NULL,       0,            0,           defaultopacity, -1},
++	/* class      instance    title       tags mask     isfloating   monitor */
++	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
++	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+ };
+ 
+ /* layout(s) */
+@@ -46,13 +46,18 @@
+ };
+ 
+ /* key definitions */
+-#define MODKEY Mod1Mask
++#define MODKEY Mod4Mask
+ #define TAGKEYS(KEY,TAG) \
+ 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+ 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+ 	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
+ 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+ 
++/* Volume Keys: xev */
++#define XK_VolU XF86XK_AudioRaiseVolume
++#define XK_VolD XF86XK_AudioLowerVolume
++#define XK_VolM XF86XK_AudioMute
++
+ /* helper for spawning shell commands in the pre dwm-5.0 fashion */
+ #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+ 
+@@ -61,10 +66,15 @@
+ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+ static const char *termcmd[]  = { "st", NULL };
+ 
++/* Assuming there is a better way to do this, but I don't know what the '.v' and '.i' arguments are */
++static const char *pactlU[] = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+5%", NULL};
++static const char *pactlD[] = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-5%", NULL};
++static const char *pactlM[] = { "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL};
++
+ static Key keys[] = {
+ 	/* modifier                     key        function        argument */
+ 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
++	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+ 	{ MODKEY,                       XK_b,      togglebar,      {0} },
+ 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+ 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+@@ -72,9 +82,9 @@
+ 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
+ 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+ 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+-	{ MODKEY,                       XK_Return, zoom,           {0} },
++	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
+ 	{ MODKEY,                       XK_Tab,    view,           {0} },
+-	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
++	{ MODKEY,                       XK_q,      killclient,     {0} },
+ 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
+ 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+ 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+@@ -86,8 +96,10 @@
+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+-	{ MODKEY|ShiftMask,		XK_KP_Add, changeopacity,	{.f = +0.1}},
+-	{ MODKEY|ShiftMask,		XK_KP_Subtract, changeopacity,  {.f = -0.1}},
++    /* Volume controls w/ no modkey. uses spawn() that seems to work great in dwm.c */
++    { 0,                       XK_VolU,   spawn,          {.v = pactlU } },
++    { 0,                       XK_VolD,   spawn,          {.v = pactlD } },
++    { 0,                       XK_VolM,   spawn,          {.v = pactlM } },
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+@@ -97,7 +109,7 @@
+ 	TAGKEYS(                        XK_7,                      6)
+ 	TAGKEYS(                        XK_8,                      7)
+ 	TAGKEYS(                        XK_9,                      8)
+-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
++	{ MODKEY|ShiftMask,             XK_e,      quit,           {0} },
+ };
+ 
+ /* button definitions */
+--- config.def.h	2021-05-03 04:35:36.646654710 -0500
++++ config.h	2021-05-03 01:34:00.978809954 -0500
+@@ -1,3 +1,5 @@
++#include <X11/XF86keysym.h>
++
+ /* See LICENSE file for copyright and license details. */
+ 
+ /* appearance */
+@@ -5,9 +7,8 @@
+ static const unsigned int snap      = 32;       /* snap pixel */
+ static const int showbar            = 1;        /* 0 means no bar */
+ static const int topbar             = 1;        /* 0 means bottom bar */
+-static const double defaultopacity  = 0.75;
+-static const char *fonts[]          = { "monospace:size=10" };
+-static const char dmenufont[]       = "monospace:size=10";
++static const char *fonts[]          = { "source code pro:size=8" };
++static const char dmenufont[]       = "source code pro:size=8";
+ static const char col_gray1[]       = "#222222";
+ static const char col_gray2[]       = "#444444";
+ static const char col_gray3[]       = "#bbbbbb";
+@@ -27,10 +28,9 @@
+ 	 *	WM_CLASS(STRING) = instance, class
+ 	 *	WM_NAME(STRING) = title
+ 	 */
+-	/* class      instance    title       tags mask     isfloating	 opacity	monitor */
+-	{ "Gimp",     NULL,       NULL,       0,            1,           1.0,		-1 },
+-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           1.0,		-1 },
+-	{ "St",	      NULL,       NULL,       0,            0,           defaultopacity, -1},
++	/* class      instance    title       tags mask     isfloating   monitor */
++	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
++	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+ };
+ 
+ /* layout(s) */
+@@ -46,13 +46,18 @@
+ };
+ 
+ /* key definitions */
+-#define MODKEY Mod1Mask
++#define MODKEY Mod4Mask
+ #define TAGKEYS(KEY,TAG) \
+ 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+ 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+ 	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
+ 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+ 
++/* Volume Keys: xev */
++#define XK_VolU XF86XK_AudioRaiseVolume
++#define XK_VolD XF86XK_AudioLowerVolume
++#define XK_VolM XF86XK_AudioMute
++
+ /* helper for spawning shell commands in the pre dwm-5.0 fashion */
+ #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+ 
+@@ -61,10 +66,15 @@
+ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+ static const char *termcmd[]  = { "st", NULL };
+ 
++/* Assuming there is a better way to do this, but I don't know what the '.v' and '.i' arguments are */
++static const char *pactlU[] = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+5%", NULL};
++static const char *pactlD[] = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-5%", NULL};
++static const char *pactlM[] = { "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL};
++
+ static Key keys[] = {
+ 	/* modifier                     key        function        argument */
+ 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
++	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+ 	{ MODKEY,                       XK_b,      togglebar,      {0} },
+ 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+ 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+@@ -72,9 +82,9 @@
+ 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
+ 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+ 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+-	{ MODKEY,                       XK_Return, zoom,           {0} },
++	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
+ 	{ MODKEY,                       XK_Tab,    view,           {0} },
+-	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
++	{ MODKEY,                       XK_q,      killclient,     {0} },
+ 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
+ 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+ 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+@@ -86,8 +96,10 @@
+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+-	{ MODKEY|ShiftMask,		XK_KP_Add, changeopacity,	{.f = +0.1}},
+-	{ MODKEY|ShiftMask,		XK_KP_Subtract, changeopacity,  {.f = -0.1}},
++    /* Volume controls w/ no modkey. uses spawn() that seems to work great in dwm.c */
++    { 0,                       XK_VolU,   spawn,          {.v = pactlU } },
++    { 0,                       XK_VolD,   spawn,          {.v = pactlD } },
++    { 0,                       XK_VolM,   spawn,          {.v = pactlM } },
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+@@ -97,7 +109,7 @@
+ 	TAGKEYS(                        XK_7,                      6)
+ 	TAGKEYS(                        XK_8,                      7)
+ 	TAGKEYS(                        XK_9,                      8)
+-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
++	{ MODKEY|ShiftMask,             XK_e,      quit,           {0} },
+ };
+ 
+ /* button definitions */
