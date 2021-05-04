@@ -3,12 +3,13 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
+static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "source code pro:size=8" };
-static const char dmenufont[]       = "source code pro:size=8";
+static const char *fonts[]          = { "source code pro:size=9" };
+static const char dmenufont[]       = "source code pro:size=9";
+static const double defaultopacity  = 0.9;     /* Added w/ opacity patch */
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -16,8 +17,8 @@ static const char col_gray4[]       = "#eeeeee";
 static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+	[SchemeNorm] = { col_gray3, col_gray1, col_gray1 },
+	[SchemeSel]  = { col_gray4, col_cyan,  col_gray2  },
 };
 
 /* tagging */
@@ -29,9 +30,8 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   opacity     monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,                     -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,                      -1 },
-	{ "St",       NULL,       NULL,       0,            0,                      1 },
+	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           1.0,           -1 },
+	{ "St",       NULL,       NULL,       0,            0,           defaultopacity, 1 },
 };
 
 /* layout(s) */
@@ -67,10 +67,12 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
-/* Assuming there is a better way to do this, but I don't know what the '.v' and '.i' arguments are */
-static const char *pactlU[] = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+5%", NULL};
-static const char *pactlD[] = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-5%", NULL};
-static const char *pactlM[] = { "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL};
+/* Wrapper script to also edit the status bar */
+static const char *pactlU[] = { "volumeControl", "u", NULL };
+static const char *pactlD[] = { "volumeControl", "d", NULL };
+static const char *pactlM[] = { "volumeControl", NULL };
+
+static const char *browser[] = { "firefox", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -97,10 +99,17 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+
     /* Volume controls w/ no modkey. uses spawn() that seems to work great in dwm.c */
     { 0,                            XK_VolU,   spawn,          {.v = pactlU } },
     { 0,                            XK_VolD,   spawn,          {.v = pactlD } },
     { 0,                            XK_VolM,   spawn,          {.v = pactlM } },
+    /* Opacity Controls [ picom.conf is less powerful than dwm ] */
+    { MODKEY,                       XK_VolU,   changeopacity,  {.f = +0.05 } },
+    { MODKEY,                       XK_VolD,   changeopacity,  {.f = -0.05 } },
+    /* open firefox */
+    { MODKEY,                       XK_f,      spawn,          {.v = browser } },
+
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
