@@ -20,4 +20,6 @@ found brightness in /sys/class/acpi_video : would like as percent
 Weather works, but makes the bar much slower (I have a ping, curl, write, then read, w/ time) [about 0.7 sec]
     with all the writes and reads + network check and curling, I don't know how to make it work in 0.2 sec (...)
     -> unsure how to make this faster (?), also, how to update less often.
-
+    -> unsure if proper solution, but just updated the weather seperately in its own module every 10 minutes, and
+        decided to just query that per bar update
+    
