@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cat /home/arch/.config/weather/current
+cat /home/debian/.config/weather/current
