@@ -4,9 +4,20 @@
 
 /* appearance */
 static const unsigned int borderpx  = 2;        /* border pixel of windows */
+static const unsigned int gappx     = 10;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
+
+/* Polybar enabling with anybar */
+static const int usealtbar          = 1;        /* 1 means use non-dwm status bar */
+static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
+static const char *alttrayname      = "tray";    /* Polybar tray instance name */
+static const char *altbarcmd        = "$HOME/bar.sh"; /* Alternate bar launch command */
+
+/* ipc */
+static const char *ipcsockpath = "/tmp/dwm.sock";
+
 static const char *fonts[]          = { "source code pro:size=9" };
 static const char dmenufont[]       = "source code pro:size=9";
 static const char col_gray1[]       = "#222222";
@@ -73,16 +84,20 @@ static const char *pactlD[] = { "volumeControl", "d", NULL };
 static const char *pactlM[] = { "volumeControl", NULL };
 
 static const char *browser[] = { "firefox", NULL };
+static const char *music[] = { "vlc", "Music/BGM", NULL };
+static const char *vscode[] = { "code", "Eri/code", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-/*	{ MODKEY,                       XK_b,      togglebar,      {0} }, */
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
+    { MODKEY,                       XK_minus,  setgaps,        {.i = -1 } },
+    { MODKEY,                       XK_equal,  setgaps,        {.i = +1 } },
+    { MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i =  0 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
@@ -106,6 +121,8 @@ static Key keys[] = {
     { 0,                            XK_VolM,   spawn,          {.v = pactlM } },
     /* open firefox */
     { MODKEY,                       XK_f,      spawn,          {.v = browser } },
+    { MODKEY,                       XK_m,      spawn,          {.v = music } },
+    { MODKEY,                       XK_c,      spawn,          {.v = vscode } },
 
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
@@ -135,4 +152,22 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
+
+static IPCCommand ipccommands[] = {
+  IPCCOMMAND(  view,                1,      {ARG_TYPE_UINT}   ),
+  IPCCOMMAND(  toggleview,          1,      {ARG_TYPE_UINT}   ),
+  IPCCOMMAND(  tag,                 1,      {ARG_TYPE_UINT}   ),
+  IPCCOMMAND(  toggletag,           1,      {ARG_TYPE_UINT}   ),
+  IPCCOMMAND(  tagmon,              1,      {ARG_TYPE_UINT}   ),
+  IPCCOMMAND(  focusmon,            1,      {ARG_TYPE_SINT}   ),
+  IPCCOMMAND(  focusstack,          1,      {ARG_TYPE_SINT}   ),
+  IPCCOMMAND(  zoom,                1,      {ARG_TYPE_NONE}   ),
+  IPCCOMMAND(  incnmaster,          1,      {ARG_TYPE_SINT}   ),
+  IPCCOMMAND(  killclient,          1,      {ARG_TYPE_SINT}   ),
+  IPCCOMMAND(  togglefloating,      1,      {ARG_TYPE_NONE}   ),
+  IPCCOMMAND(  setmfact,            1,      {ARG_TYPE_FLOAT}  ),
+  IPCCOMMAND(  setlayoutsafe,       1,      {ARG_TYPE_PTR}    ),
+  IPCCOMMAND(  quit,                1,      {ARG_TYPE_NONE}   )
+};
+
 

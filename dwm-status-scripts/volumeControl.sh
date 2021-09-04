@@ -21,5 +21,3 @@ then
 else
     echo "error: volume: invalid command" 
 fi
-statusBar
-
