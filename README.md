@@ -1,4 +1,3 @@
-# Current_Suckless_configs
-Started running dwm on arch with st. Slow progress on the configuration. Storing configs
+# Running DWM with ST and using polybar for status.
 
-Dwm status scripts are mv into /usr/local/bin without the .sh for simplicity.
+Went to running debian again.
