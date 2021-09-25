@@ -1,0 +1,55 @@
+!! URxvt Appearance
+URxvt.font:xft:source code pro:size=8:
+URxvt.letterSpace: -1
+URxvt.lineSpace: -1
+URxvt.internalBorder: 12
+
+URxvt.cursorBlink: true
+URxvt.cursorUnderline: false
+URxvt.saveline: 2048
+URxvt.scrollBar: false
+URxvt.scrollBar_right: false
+
+URxvt.urgentOnBell: false 
+URxvt.depth: 24
+URxvt.iso14755: false
+
+!! Colorscheme Start
+! special
+*.foreground:   #FFFFFF
+*.background:   #101010
+*.cursorColor:  #d0d0d0
+
+! black
+*.color0:       #151515
+*.color8:       #505050
+
+! red
+*.color1:       #ff97ac
+*.color9:       #fb9fb1
+
+! green
+*.color2:       #c1d77e
+*.color10:      #c1db6f
+
+! yellow
+*.color3:       #ddb26f
+*.color11:      #ddb26f
+
+! blue
+*.color4:       #50b5ec
+*.color12:      #6fc2ef
+
+! magenta
+*.color5:       #e49cf3
+*.color13:      #e1a3ee
+
+! cyan
+*.color6:       #12cfc0
+*.color14:      #12cfc0
+
+! white
+*.color7:       #d0d0d0
+*.color15:      #f5f5f5
+
+!! END
