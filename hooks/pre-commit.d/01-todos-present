@@ -1,0 +1,18 @@
+#!/bin/sh
+
+
+filesregex=$(git diff HEAD --name-only | xargs echo | sed 's/ /|/g; s/$/|/')
+todoregex='todo|Todo|TODO'
+
+regex="$filesregex$todoregex"
+
+todos=$(git diff HEAD | grep '^+' | grep -Pi $regex)
+
+if [ ! -z "$(echo $todos | grep -Pi $todoregex)" ]
+then
+    cat <<\EOT
+    Warning: Todos are present in files:
+EOT
+    echo $todos | sed 's/+++/\n/g; s/\/\// /g; s/\\\*/ /g; s/TODO/\n\tTODO/g; s/Todo/\n\tTodo/g; s/todo/\n\ttodo/g'
+    exit 0
+fi

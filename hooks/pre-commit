@@ -1,0 +1,28 @@
+#!/bin/sh
+
+dir=$(dirname "$0")
+
+if [ -d "$dir/pre-commit.d" ]
+then
+    cd "$dir/pre-commit.d"
+else
+    cat <<\EOT
+    Warning: Hooks are not properly configured
+        missing directory pre-commit.d/ in hooks/
+EOT
+    exit 1
+fi
+
+for hooks in *; do
+    bash $hooks
+    RESULT=$?
+
+    if [ $RESULT != 0 ]; then
+        cat <<\EOT
+        ERROR: Not all hooks passed. Commit Failed
+EOT
+        exit $RESULT
+    fi
+done
+
+exit 0

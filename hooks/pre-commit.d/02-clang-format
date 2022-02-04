@@ -1,0 +1,21 @@
+#!/bin/sh
+
+
+clangFile=../../.clang-format
+if [ ! -f "$clangFile" ]
+then
+    printf "\nFailed to detect a clang format file\n"
+    exit 1
+fi
+
+
+filename=$(git diff head --name-only | grep -E '*\.[h|c|cpp|cc]$')
+
+if [ ! -z "$filename" ]
+then
+    printf "\nRunning Clang Format:\n$filename\n\n"
+    printf "$filename\n" | sed 's/^/..\/..\//g' | xargs -d '\n' -I{} clang-format {} -i
+    exit $?
+fi
+
+exit 0
