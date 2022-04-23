@@ -1,0 +1,10 @@
+#!/bin/sh
+
+
+brightness_file="/sys/class/backlight/amdgpu_bl0/brightness"
+
+brightness=$(cat "$brightness_file")
+
+percent=$(echo "scale=2;((($brightness - 20) / 180) *100)" | bc)
+
+printf " Brightness: %0.f%% " $percent

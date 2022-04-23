@@ -1,0 +1,24 @@
+#!/bin/sh
+
+brightness_file="/sys/class/backlight/amdgpu_bl0/brightness"
+brightness=$(cat "$brightness_file")
+
+
+if [ $1 = "u" ] || [ $1 = "up" ]
+then
+    if [ $brightness -lt 200 ]
+    then
+        echo $((brightness + 10)) > $brightness_file
+        ~/Programs/scripts/statusBar
+    fi
+elif [ $1 = "d" ] || [ $1 = "down" ]
+then
+    if [ $brightness -gt 20 ]
+    then
+        echo $((brightness - 10)) > $brightness_file
+        ~/Programs/scripts/statusBar
+    fi
+fi
+        
+
+
