@@ -9,14 +9,14 @@ then
     if [ $brightness -lt 200 ]
     then
         echo $((brightness + 10)) > $brightness_file
-        ~/Programs/scripts/statusBar
+        statusBar q
     fi
 elif [ $1 = "d" ] || [ $1 = "down" ]
 then
     if [ $brightness -gt 20 ]
     then
         echo $((brightness - 10)) > $brightness_file
-        ~/Programs/scripts/statusBar
+        statusBar q
     fi
 fi
         

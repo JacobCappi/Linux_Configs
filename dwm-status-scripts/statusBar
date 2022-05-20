@@ -1,2 +1,14 @@
 #!/bin/sh
-xsetroot -name "$(getBrightness) | $(getVolume) | $(getBattery) | $(getTime); $(getWeather)"
+
+if [ $# = 0 ]
+then
+    xsetroot -name "$(getBrightness) | $(getVolume) | $(getBattery) | $(getTime); $(getWeather) | $(getStocks)"
+elif [ $# = 1 ]
+then
+    if [ $1 = 'q' ] || [ $1 = 'quick' ]
+    then
+        name="$(getBrightness) | $(getVolume) | $(xprop -root | grep "WM_NAME(STRING)" | cut -d ' ' -f12-)"
+        xsetroot -name "${name%?}"
+    fi
+fi
+

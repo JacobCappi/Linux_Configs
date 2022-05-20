@@ -1,0 +1,8 @@
+#!/bin/sh
+
+current=$(date +%H:%M)
+
+if [[ "$current" > "08:30" ]] && [[ "$current" < "16:00" ]];
+then
+    echo "$(python updateStocks.py)@time ($(date +%R))" > ~/.config/stocks/current
+fi

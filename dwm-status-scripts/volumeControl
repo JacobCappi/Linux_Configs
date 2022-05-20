@@ -13,11 +13,11 @@ then
     if [ $1 = "up" ] || [ $1 = "u" ]
     then
         pactl set-sink-volume @DEFAULT_SINK@ +5%
-        ~/Programs/scripts/statusBar
+        statusBar q
     elif [ $1 = "down" ] || [ $1 = "d" ] 
     then
         pactl set-sink-volume @DEFAULT_SINK@ -5%
-        ~/Programs/scripts/statusBar
+        statusBar q
     else
         echo "error: invalid param"
     fi
