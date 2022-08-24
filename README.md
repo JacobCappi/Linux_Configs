@@ -1,3 +1,3 @@
-# Running DWM with ST and using polybar for status.
+# Running DWM with ST
 
 Went to running debian again.
